@@ -60,7 +60,7 @@ const ShareButton = ({ access }) => {
     setIsPublic(access);
     if (!isPublic) {
       // Generate a unique link when the document is public
-      const generatedLink = `http://localhost:3000/docs/${docsId}`;
+      const generatedLink = `https://taskify-eight-zeta.vercel.app/docs/${docsId}`;
       setShareableLink(generatedLink);
     }
   }, [access]);

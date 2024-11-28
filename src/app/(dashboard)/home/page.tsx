@@ -162,9 +162,7 @@ const DialogCard: React.FC<{
 const Page: React.FC = () => {
   const [token, setToken] = useState("");
   const dispatch = useDispatch();
-  const [organizationList, setOrganizationList] = useState<OrganizationItem[]>([
-    { _id: "0", title: "Tiktok", description: "This is UI team of Tiktok" },
-  ]);
+  const [organizationList, setOrganizationList] = useState<OrganizationItem[]>([]);
   const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
