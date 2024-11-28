@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 100" fill="none">
+  <!-- Checklist Icon -->
+  <g>
+    <rect x="10" y="20" width="50" height="60" stroke="black" stroke-width="3" />
+    <line x1="20" y1="30" x2="50" y2="30" stroke="black" stroke-width="2" />
+    <line x1="20" y1="45" x2="50" y2="45" stroke="black" stroke-width="2" />
+    <line x1="20" y1="60" x2="40" y2="60" stroke="black" stroke-width="2" />
+    <polyline points="20,70 30,80 45,55" fill="none" stroke="black" stroke-width="3" />
+  </g>
+
+  <!-- Divider Line -->
+  <line x1="70" y1="20" x2="70" y2="80" stroke="black" stroke-width="3" />
+
+  <!-- Main Title (TASKIFY) -->
+  <text x="90" y="50" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="black">
+    TASKIFY
+  </text>
+
+  <!-- Subtitle (We arrange the tasks) -->
+  <text x="90" y="75" font-family="Arial, sans-serif" font-size="16" fill="black">
+    We arrange the tasks
+  </text>
+</svg>
