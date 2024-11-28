@@ -2,11 +2,13 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { logout } from "@/redux/authSlice";
+import { logout, selectAuthState } from "@/redux/authSlice";
 import { DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { useEditor } from "@tiptap/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 
 
@@ -17,7 +19,14 @@ export default function DashBoardLayout({
 }>) {
   const router=useRouter();
   const dispatch=useDispatch();
-  const name=localStorage.getItem('name')
+  const isLoading=useSelector((selectAuthState)=>selectAuthState.isLoading)
+  useEffect(()=>{
+
+  },[isLoading])
+  
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>; // You can replace with a spinner or any loading indicator
+  }
   return (
           <div className="flex h-[100vh] flex-col items-center bg-neutral-100">
       <div className="w-[100%] flex justify-between bg-neutral-100 px-[20px] py-[15px] shadow-md">
@@ -31,9 +40,9 @@ export default function DashBoardLayout({
               <AvatarFallback className="bg-blue-600 text-white rounded-full">CN</AvatarFallback>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuLabel className="font-normal">{name}</DropdownMenuLabel>
+              <DropdownMenuLabel className="font-normal">Hi there</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="px-[10px] py-[8px]" onClick={()=>router.push("/home")}>My organizations</DropdownMenuItem>
+              <DropdownMenuItem className="px-[10px] py-[8px]" onClick={()=>router.push("/home")}>My Docs</DropdownMenuItem>
               <DropdownMenuItem className="px-[10px] py-[8px]" onClick={()=>{dispatch(logout());router.push("/login") }}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

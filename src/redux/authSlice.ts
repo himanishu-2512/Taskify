@@ -4,7 +4,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
-  name:string;
+  isLoading:boolean;
 }
 interface PayloadObject{
   token:string|null;
@@ -14,7 +14,7 @@ interface PayloadObject{
 const initialState: AuthState = {
   isAuthenticated: false,
   token: null,
-  name:"",
+  isLoading:true,
 };
 
 const authSlice = createSlice({
@@ -25,14 +25,14 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.token = action.payload.token;
       console.log(action.payload.name)
-      state.name=action.payload.name;
+      state.isLoading=false;
     },
     logout: (state) => {
       state.isAuthenticated = false;
       localStorage.removeItem('accessToken')
       localStorage.removeItem('name')
       state.token = null;
-      state.name="";
+      state.isLoading=false;
     },
     checkAuth: (state) => {
       const token = localStorage.getItem('accessToken');
@@ -41,10 +41,13 @@ const authSlice = createSlice({
         state.token = token;
       }
     },
+    setIsLoading:(state)=>{
+      state.isLoading=!state.isLoading;
+    }
   },
 });
 
-export const { login, logout,checkAuth } = authSlice.actions;
+export const { login, logout,checkAuth,setIsLoading } = authSlice.actions;
 
 export const selectAuthState = (state: { auth: AuthState }) => state.auth;
 

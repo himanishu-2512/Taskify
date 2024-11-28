@@ -30,6 +30,9 @@ import { Button } from "@/components/ui/button";
 import { getRequest, postRequest } from "@/utils/apiUtils";
 import { API_ENDPOINTS } from "@/constants/apiEndPointsConstant";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import { useDispatch } from "react-redux";
+import { setIsLoading } from "@/redux/authSlice";
 
 interface OrganizationItem {
   _id: string;
@@ -56,7 +59,7 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({ item }) => {
 
   return (
     <Card
-      className="border-2 h-[200px] cursor-pointer"
+      className="border-2 h-[200px] min-w-[300px] cursor-pointer"
       onClick={() => router.push(`/docs/${item._id}`)}
     >
       <CardHeader>
@@ -69,21 +72,7 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({ item }) => {
       </CardHeader>
       <Separator />
       <CardContent className="flex flex-1 flex-col justify-center ">
-        <div className="p-4 text-center w-[100%] flex items-center justify-center">
-          {Array(4)
-            .fill("0")
-            .map((_, index) => (
-              <Avatar key={index}>
-                <AvatarImage
-                  className="w-[30px] h-auto rounded-full"
-                  src="https://github.com/shadcn.png"
-                />
-                <AvatarFallback className="rounded-full bg-blue-900 text-white font-semibold">
-                  AB
-                </AvatarFallback>
-              </Avatar>
-            ))}
-        </div>
+        <Button>{item.access}</Button>
       </CardContent>
     </Card>
   );
@@ -95,7 +84,7 @@ const DialogCard: React.FC<{
   open: boolean;
   onSubmit: React.FC;
 }> = ({ setOrganizationList, setOpen, open, onSubmit }) => {
-  const token = localStorage.getItem("accessToken");
+  const [token, setToken] = useState("");
   const {
     register,
     handleSubmit,
@@ -105,6 +94,12 @@ const DialogCard: React.FC<{
     resolver: zodResolver(organizationSchema),
   });
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedValue = localStorage.getItem("accessToken");
+      setToken(storedValue);
+    }
+  }, []);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
@@ -165,15 +160,29 @@ const DialogCard: React.FC<{
 };
 
 const Page: React.FC = () => {
-  const token = localStorage.getItem("accessToken");
+  const [token, setToken] = useState("");
+  const dispatch = useDispatch();
   const [organizationList, setOrganizationList] = useState<OrganizationItem[]>([
     { _id: "0", title: "Tiktok", description: "This is UI team of Tiktok" },
   ]);
   const [open, setOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const storedValue = localStorage.getItem("accessToken");
+      setToken(storedValue);
+    }
+  }, []);
   const fetchDocsList = async () => {
+    dispatch(setIsLoading());
     try {
-      const response = await getRequest(API_ENDPOINTS.USER.GET_ALL_DOCUMENTS_CREATED, {}, {}, token);
-  
+      const response = await getRequest(
+        API_ENDPOINTS.USER.GET_ALL_DOCUMENTS_CREATED,
+        {},
+        {},
+        token
+      );
+
       // Check if response is an AxiosResponse
       if (typeof response !== "string" && response?.data?.user?.documents) {
         setOrganizationList(response.data.user.documents);
@@ -183,12 +192,18 @@ const Page: React.FC = () => {
     } catch (error) {
       // console.error("Error fetching documents:", error);
       if (typeof error !== "string" && error?.response?.data?.message) {
-      const errorMessage = error?.response?.data?.message || "An unexpected error occurred.";
-      alert(errorMessage);
+        const errorMessage =
+          error?.response?.data?.message || "An unexpected error occurred.";
+        alert(errorMessage);
+      }
+    } finally {
+      dispatch(setIsLoading());
     }
-  };}
-  
+  };
+
   const onSubmit = async (data: OrganizationFormValues) => {
+    dispatch(setIsLoading());
+
     try {
       const response = await postRequest(
         API_ENDPOINTS.DOCUMENT.CREATE,
@@ -202,17 +217,22 @@ const Page: React.FC = () => {
         setOpen(false);
         fetchDocsList();
       }
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      dispatch(setIsLoading());
+    }
   };
   useEffect(() => {
-    fetchDocsList();
-  }, []);
+    if (token && token != "") {
+      fetchDocsList();
+    }
+  }, [token]);
   useEffect(() => {
     console.log(organizationList);
   }, [organizationList]);
 
   return (
-    <div className="flex flex-wrap gap-6">
+    <div className="flex flex-wrap gap-6 w-[100%] justify-center">
       {organizationList.map((item) => (
         <OrganizationCard key={item._id} item={item} />
       ))}
@@ -225,5 +245,7 @@ const Page: React.FC = () => {
     </div>
   );
 };
+
+// Dynamically import the page component and disable SSR for this page
 
 export default Page;
